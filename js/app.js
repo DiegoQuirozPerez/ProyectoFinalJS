@@ -76,4 +76,96 @@ var calculadora ={
     document.getElementById("menos").addEventListener("click", function() {calculadora.ingresoOperacion("-");});
     document.getElementById("mas").addEventListener("click", function() {calculadora.ingresoOperacion("+");});
   },
-}
+
+  //Funcion de teclas de calculadora
+  borrarVisor: function(){
+    this.valorVisor = "0";
+    this.operacion = "";
+    this.primerValor = 0;
+    this.segundoValor = 0;
+    this.resultado = 0;
+    this.Operación = "";
+    this.auxTeclaIgual = false;
+    this.ultimoValor = 0;
+    this.updateVisor();
+  },
+
+  cambiarSigno: function(){
+    if (this.valorVisor !="0") {
+      var aux;
+      if (this.valorVisor.charAt(0)=="-") {
+        aux = this.valorVisor.slice(1);
+      }else {
+        aux = "-" + this.valorVisor;
+      }
+    this.valorVisor = "";
+    this.valorVisor = aux;
+    this.updateVisor();
+  },
+
+  ingresoDecimal: function(){
+    if (this.valorVisor.indexOf(".")== -1){
+      if (this.valorVisor ==""){
+        this.valorVisor = this.valorVisor + "0.";
+      }else{
+        this.valorVisor = this.valorVisor + ".";
+      }
+      this.updateVisor();
+    }
+  },
+
+  ingresoOperacion: function(oper){
+    this.primerValor = parseFloat(this.valorVisor);
+    this.valorVisor = "";
+    this.operacion = oper;
+    this.auxTeclaIgual = false;
+    this.updateVisor();
+  },
+
+  verResultado: function(){ //tecla igual
+    if (!this.auxTeclaIgual){ //primera vez que presion tecla igual
+      this.segundoValor = parseFloat(this.valorVisor);
+      this.ultimoValor = this.segundoValor;
+      //calcular verResultado
+      this.realizarOperacion(this.primerValor, this.segundoValor, this.operacion);
+    }else{ //otras veces que presione la tecla igual
+      //calculo del Resultado
+      this.realizarOperacion(this.primerValor, this.ultimoValor, this.operacion);
+    }
+    //almecena resultado como primer valor para seguir con las operaciones
+    this.primerValor = this.resultado;
+    //borrar visor y remplazar por el Resultado
+    this.valorVisor = "";
+    //verifica el largo del resultado para acortar si es necesario
+    if (this.resultado.toString().length < 9){
+      this.valorVisor = this.resultado.toString();
+    }else{
+      this.valorVisor = this.resultado.toString().slice(0.8) + "...";
+    }
+    //auxiliar para indicar si ya se presiono la tecla igual, para calcular sobre el ultimo valorVisor
+    this.auxTeclaIgual = true;
+    this.updateVisor();
+  },
+  realizarOperacion: function(primerValor, segundoValor, operacion){
+    switch (operacion){
+      case "+":
+        this.resultado = eval(primerValor + segundoValor);
+      break;
+      case "-":
+        this.resultado = eval(primerValor - segundoValor);
+      break;
+      case "*":
+        this.resultado = eval(primerValor * segundoValor);
+      break;
+      case "/":
+        this.resultado = eval(primerValor / segundoValor);
+      break;
+      case "raiz":
+        this.resultado = eval(math.sqrt(primerValor));
+    }
+  },
+  updateVisor: function(){
+    this.visor.innerHTML = this.valorVisor;
+  }
+};
+calculadora.init();
